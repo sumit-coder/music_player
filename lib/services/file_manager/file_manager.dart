@@ -1,15 +1,17 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class FileManager with ChangeNotifier {
   List<FileSystemEntity>? desktopFiles;
   List<Map<String, dynamic>> listFiles = [];
 
   initFiles() async {
-    // directory = await getDownloadsDirectory();
-    desktopFiles = Directory("C:/Users/win10/Downloads/").listSync(recursive: true);
-
+    var directory = await getDownloadsDirectory();
+    desktopFiles = Directory("storage/emulated/0/").listSync(recursive: true);
+    // desktopFiles = directory!.listSync(recursive: true);
+    print(directory);
     if (desktopFiles != null) {
       for (var fileInfo in desktopFiles!) {
         String filePath = fileInfo.path;
