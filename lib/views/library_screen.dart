@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:music_player/services/file_manager/file_manager.dart';
+import 'package:music_player/views/player_screen.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 
@@ -53,7 +54,20 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     // player.setFilePath(listFiles[index].data);
                     // player.play();
                     print(listFiles[index]);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PlayerScreen(
+                          songInfo: listFiles[index],
+                        ),
+                      ),
+                    );
                   },
+                  leading: QueryArtworkWidget(
+                    controller: _audioQuery,
+                    id: listFiles[index].id,
+                    type: ArtworkType.AUDIO,
+                  ),
                   // leading: Image.file(file),
                   title: Text(
                     listFiles[index].title.toString(),

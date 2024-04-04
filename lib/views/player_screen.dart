@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:music_player/views/widgets/player_widgets/play_button.dart';
 import 'package:music_player/views/widgets/player_widgets/repeat_button.dart';
 import 'package:music_player/views/widgets/player_widgets/shuffle_button.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 
 class PlayerScreen extends StatelessWidget {
-  const PlayerScreen({super.key});
+  final SongModel songInfo;
+
+  const PlayerScreen({super.key, required this.songInfo});
 
   @override
   Widget build(BuildContext context) {
@@ -17,11 +20,22 @@ class PlayerScreen extends StatelessWidget {
           // Music Cover Album
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              "https://i.ytimg.com/vi/725WlG1idPc/maxresdefault.jpg",
-              width: size.width * 0.80,
-              height: 300,
-              fit: BoxFit.cover,
+            // child: Image.network(
+            //   "https://i.ytimg.com/vi/725WlG1idPc/maxresdefault.jpg",
+            //   width: size.width * 0.80,
+            //   height: 300,
+            //   fit: BoxFit.cover,
+            // ),
+            child: QueryArtworkWidget(
+              // controller: _audioQuery,
+              artworkHeight: 300,
+              artworkWidth: size.width * 0.80,
+              id: songInfo.id,
+              type: ArtworkType.AUDIO,
+              artworkBorder: BorderRadius.circular(12),
+              quality: 100,
+              artworkQuality: FilterQuality.high,
+              artworkFit: BoxFit.contain,
             ),
           ),
           // Playback Timeline
