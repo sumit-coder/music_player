@@ -9,9 +9,10 @@ class FileManager with ChangeNotifier {
 
   initFiles() async {
     var directory = await getDownloadsDirectory();
+    // print(desktopFiles);
     desktopFiles = Directory("storage/emulated/0/").listSync(recursive: true);
     // desktopFiles = directory!.listSync(recursive: true);
-    print(directory);
+    print(desktopFiles.toString() + "asdf");
     if (desktopFiles != null) {
       for (var fileInfo in desktopFiles!) {
         String filePath = fileInfo.path;
@@ -23,5 +24,6 @@ class FileManager with ChangeNotifier {
         }
       }
     }
+    notifyListeners();
   }
 }
