@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:music_player/services/file_manager/file_manager.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class LibraryScreen extends StatefulWidget {
@@ -33,23 +31,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
       body: Column(
         children: [
           Container(
+            height: 200,
             child: Center(
               child: TextButton(
                 child: Text("data"),
                 onPressed: () async {
-                  List<SongModel> listFiles = await _audioQuery.querySongs();
-                  print(listFiles);
+                  listFiles = await _audioQuery.querySongs();
+
                   setState(() {});
-                  // if (await Permission.manageExternalStorage.request().isGranted) {
-                  //   print("object");
-                  // }
-                  // await Permission.storage.request();
-                  // var status = await Permission.storage.status;
-                  // print(status);
-                  // if (status.isDenied) {
-                  //   // We haven't asked for permission yet or the permission has been denied before, but not permanently.
-                  // }
-                  // fileManagerProvider.initFiles();
                 },
               ),
             ),
@@ -61,9 +50,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 // print('object');
                 return ListTile(
                   onTap: () {
-                    player.setFilePath(listFiles[index].data);
-                    player.play();
+                    // player.setFilePath(listFiles[index].data);
+                    // player.play();
+                    print(listFiles[index]);
                   },
+                  // leading: Image.file(file),
                   title: Text(
                     listFiles[index].title.toString(),
                     style: TextStyle(color: Colors.grey),

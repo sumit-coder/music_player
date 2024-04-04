@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:music_player/views/library_screen.dart';
-import 'package:music_player/views/player_screen.dart';
 import 'package:provider/provider.dart';
-
 import 'services/file_manager/file_manager.dart';
 
 void main() {
