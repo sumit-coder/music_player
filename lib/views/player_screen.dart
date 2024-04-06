@@ -15,7 +15,8 @@ class PlayerScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey.shade900,
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Music Cover Album
           ClipRRect(
@@ -37,6 +38,14 @@ class PlayerScreen extends StatelessWidget {
               artworkQuality: FilterQuality.high,
               artworkFit: BoxFit.contain,
             ),
+          ),
+          // Track Details
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(songInfo.title, style: TextStyle(fontSize: 18, color: Colors.grey)),
+              Text(songInfo.artist.toString(), style: TextStyle(color: Colors.grey)),
+            ],
           ),
           // Playback Timeline
           Container(
