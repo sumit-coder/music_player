@@ -61,7 +61,15 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     ),
                     title: Text(
                       fileManagerProvider.listFiles[index].title.toString(),
+                      maxLines: 1,
                       style: TextStyle(color: Colors.grey),
+                    ),
+                    subtitle: Row(
+                      children: [
+                        Text(fileManagerProvider.listFiles[index].artist.toString()),
+                        Text(" - "),
+                        Text(fileManagerProvider.listFiles[index].duration.toString()),
+                      ],
                     ),
                   );
                 },
