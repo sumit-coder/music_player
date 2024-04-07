@@ -1,4 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:music_player/views/widgets/music_duration_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:music_player/views/player_screen.dart';
@@ -66,9 +69,17 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     ),
                     subtitle: Row(
                       children: [
-                        Text(fileManagerProvider.listFiles[index].artist.toString()),
+                        ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: 200),
+                          child: Text(
+                            fileManagerProvider.listFiles[index].artist.toString(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                         Text(" - "),
-                        Text(fileManagerProvider.listFiles[index].duration.toString()),
+                        MusicDurationWidget(songDurationInMilliseconds: fileManagerProvider.listFiles[index].duration ?? 0),
+                        // Text(Duration(milliseconds: fileManagerProvider.listFiles[index].duration ?? 0).inMinutes.toString()),
                       ],
                     ),
                   );
