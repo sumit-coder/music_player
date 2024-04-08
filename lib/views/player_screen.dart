@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:music_player/views/widgets/music_duration_widget.dart';
 import 'package:music_player/views/widgets/player_widgets/play_button.dart';
 import 'package:music_player/views/widgets/player_widgets/repeat_button.dart';
 import 'package:music_player/views/widgets/player_widgets/shuffle_button.dart';
@@ -20,7 +21,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void initState() {
     player.setFilePath(widget.songInfo.data);
-
+    setState(() {});
     super.initState();
   }
 
@@ -68,36 +69,48 @@ class _PlayerScreenState extends State<PlayerScreen> {
               Column(
                 children: [
                   // Playback Timeline
-                  Column(
-                    children: [
-                      SliderTheme(
-                        data: SliderThemeData(
-                          overlayShape: SliderComponentShape.noOverlay,
-                          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-                          thumbColor: Colors.grey,
-                          activeTrackColor: Colors.grey.shade600,
-                          inactiveTrackColor: Colors.grey.shade800,
-                          trackHeight: 2,
-                        ),
-                        child: Slider(
-                          value: 0.6,
-                          onChanged: (value) {
-                            print(value);
-                          },
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 6),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('5:00', style: TextStyle(color: Colors.grey)),
-                            Text('0:00', style: TextStyle(color: Colors.grey)),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+                  StreamBuilder<Duration>(
+                      stream: player.positionStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          // print(player.duration!.inSeconds / snapshot.data!.inSeconds);
+                          return Column(
+                            children: [
+                              SliderTheme(
+                                data: SliderThemeData(
+                                  overlayShape: SliderComponentShape.noOverlay,
+                                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+                                  thumbColor: Colors.grey,
+                                  activeTrackColor: Colors.grey.shade600,
+                                  inactiveTrackColor: Colors.grey.shade800,
+                                  trackHeight: 2,
+                                ),
+                                child: Slider(
+                                  max: player.duration != null ? player.duration!.inSeconds.toDouble() : 0,
+                                  value: snapshot.data!.inSeconds.toDouble(),
+                                  onChanged: (newPosition) {
+                                    player.seek(Duration(seconds: newPosition.toInt()));
+                                  },
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 6),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    MusicDurationWidget(songDurationInMilliseconds: snapshot.data!.inMilliseconds),
+                                    MusicDurationWidget(
+                                        songDurationInMilliseconds: player.duration != null ? player.duration!.inMilliseconds : 0),
+                                    // Text('0:00', style: TextStyle(color: Colors.grey)),
+                                  ],
+                                ),
+                              )
+                            ],
+                          );
+                        }
+
+                        return Text("data");
+                      }),
                   // Playback Controls
                   StreamBuilder<PlayerState>(
                     stream: player.playerStateStream,

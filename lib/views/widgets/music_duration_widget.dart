@@ -30,6 +30,6 @@ class _MusicDurationWidgetState extends State<MusicDurationWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Text(songDuration);
+    return Text(songDuration, style: TextStyle(color: Colors.grey));
   }
 }

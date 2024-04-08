@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => FileManager()),
       ],
       child: MaterialApp(
+        showPerformanceOverlay: true,
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         themeMode: ThemeMode.dark,
