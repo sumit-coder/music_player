@@ -1,11 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:music_player/views/widgets/music_duration_widget.dart';
+import 'package:music_player/providers/player_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:music_player/views/player_screen.dart';
-import 'package:music_player/services/file_manager/file_manager.dart';
+import 'package:music_player/views/widgets/music_duration_widget.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -17,10 +15,10 @@ class LibraryScreen extends StatefulWidget {
 class _LibraryScreenState extends State<LibraryScreen> {
   @override
   Widget build(BuildContext context) {
-    var fileManagerProvider = Provider.of<FileManager>(context);
+    var playerProvider = Provider.of<PlayerProvider>(context);
     return Scaffold(
       body: SafeArea(
-        child: fileManagerProvider.listFiles.isEmpty
+        child: playerProvider.listAudioFiles.isEmpty
             ? Center(
                 child: Container(
                   decoration: BoxDecoration(
@@ -36,34 +34,35 @@ class _LibraryScreenState extends State<LibraryScreen> {
                         style: TextStyle(color: Colors.grey),
                       ),
                       onPressed: () async {
-                        fileManagerProvider.getAllMusicFiles();
+                        playerProvider.getAllMusicFiles();
                       },
                     ),
                   ),
                 ),
               )
             : ListView.builder(
-                itemCount: fileManagerProvider.listFiles.length,
+                itemCount: playerProvider.listAudioFiles.length,
                 itemBuilder: (context, index) {
                   return ListTile(
                     onTap: () {
-                      print(fileManagerProvider.listFiles[index]);
+                      playerProvider.player.seek(Duration.zero, index: index);
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => PlayerScreen(
-                            songInfo: fileManagerProvider.listFiles[index],
+                            songInfo: playerProvider.listAudioFiles[index],
                           ),
                         ),
                       );
                     },
                     leading: QueryArtworkWidget(
-                      controller: fileManagerProvider.audioQuery,
-                      id: fileManagerProvider.listFiles[index].id,
+                      controller: playerProvider.audioQuery,
+                      id: playerProvider.listAudioFiles[index].id,
                       type: ArtworkType.AUDIO,
                     ),
                     title: Text(
-                      fileManagerProvider.listFiles[index].title.toString(),
+                      playerProvider.listAudioFiles[index].title.toString(),
                       maxLines: 1,
                       style: TextStyle(color: Colors.grey),
                     ),
@@ -72,14 +71,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
                         ConstrainedBox(
                           constraints: BoxConstraints(maxWidth: 200),
                           child: Text(
-                            fileManagerProvider.listFiles[index].artist.toString(),
+                            playerProvider.listAudioFiles[index].artist.toString(),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         Text(" - "),
-                        MusicDurationWidget(songDurationInMilliseconds: fileManagerProvider.listFiles[index].duration ?? 0),
-                        // Text(Duration(milliseconds: fileManagerProvider.listFiles[index].duration ?? 0).inMinutes.toString()),
+                        MusicDurationWidget(songDurationInMilliseconds: playerProvider.listAudioFiles[index].duration ?? 0),
+                        // Text(Duration(milliseconds: playerProvider.listFiles[index].duration ?? 0).inMinutes.toString()),
                       ],
                     ),
                   );

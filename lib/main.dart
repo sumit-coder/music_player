@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:music_player/providers/player_provider.dart';
 import 'package:music_player/views/library_screen.dart';
 import 'package:provider/provider.dart';
 import 'services/file_manager/file_manager.dart';
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => FileManager()),
+        ChangeNotifierProvider(create: (context) => PlayerProvider()),
       ],
       child: MaterialApp(
         showPerformanceOverlay: true,
