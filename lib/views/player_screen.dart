@@ -74,6 +74,15 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           // print(player.duration!.inSeconds / snapshot.data!.inSeconds);
+                          int hours = Duration(milliseconds: snapshot.data!.inMilliseconds).inHours;
+                          int minutes = Duration(milliseconds: snapshot.data!.inMilliseconds).inMinutes % 60;
+                          int seconds = Duration(milliseconds: snapshot.data!.inMilliseconds).inSeconds % 60;
+
+                          String hourString = hours > 0 ? "$hours:" : "";
+                          String minuteString = minutes.toString().padLeft(2, '0');
+                          String secondString = seconds.toString().padLeft(2, '0');
+
+                          String songDuration = "$hourString$minuteString:$secondString";
                           return Column(
                             children: [
                               SliderTheme(
@@ -86,7 +95,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                   trackHeight: 2,
                                 ),
                                 child: Slider(
-                                  max: player.duration != null ? player.duration!.inSeconds.toDouble() : 0,
+                                  max: widget.songInfo.duration! / 1000,
                                   value: snapshot.data!.inSeconds.toDouble(),
                                   onChanged: (newPosition) {
                                     player.seek(Duration(seconds: newPosition.toInt()));
@@ -94,14 +103,13 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 6),
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    MusicDurationWidget(songDurationInMilliseconds: snapshot.data!.inMilliseconds),
-                                    MusicDurationWidget(
-                                        songDurationInMilliseconds: player.duration != null ? player.duration!.inMilliseconds : 0),
-                                    // Text('0:00', style: TextStyle(color: Colors.grey)),
+                                    // MusicDurationWidget(songDurationInMilliseconds: snapshot.data!.inMilliseconds),
+                                    Text(songDuration, style: const TextStyle(color: Colors.grey)),
+                                    MusicDurationWidget(songDurationInMilliseconds: widget.songInfo.duration!),
                                   ],
                                 ),
                               )
