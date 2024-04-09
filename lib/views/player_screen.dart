@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:music_player/providers/player_provider.dart';
 import 'package:music_player/views/widgets/music_duration_widget.dart';
 import 'package:music_player/views/widgets/player_widgets/play_button.dart';
 import 'package:music_player/views/widgets/player_widgets/repeat_button.dart';
 import 'package:music_player/views/widgets/player_widgets/shuffle_button.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:provider/provider.dart';
 
 class PlayerScreen extends StatefulWidget {
   final SongModel songInfo;
@@ -16,17 +18,9 @@ class PlayerScreen extends StatefulWidget {
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
-  AudioPlayer player = AudioPlayer();
-
-  @override
-  void initState() {
-    player.setFilePath(widget.songInfo.data);
-    setState(() {});
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
+    var playerProvider = Provider.of<PlayerProvider>(context);
     var size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.grey.shade900,
@@ -70,10 +64,19 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 children: [
                   // Playback Timeline
                   StreamBuilder<Duration>(
-                      stream: player.positionStream,
+                      stream: playerProvider.player.positionStream,
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           // print(player.duration!.inSeconds / snapshot.data!.inSeconds);
+                          int hours = Duration(milliseconds: snapshot.data!.inMilliseconds).inHours;
+                          int minutes = Duration(milliseconds: snapshot.data!.inMilliseconds).inMinutes % 60;
+                          int seconds = Duration(milliseconds: snapshot.data!.inMilliseconds).inSeconds % 60;
+
+                          String hourString = hours > 0 ? "$hours:" : "";
+                          String minuteString = minutes.toString().padLeft(2, '0');
+                          String secondString = seconds.toString().padLeft(2, '0');
+
+                          String songDuration = "$hourString$minuteString:$secondString";
                           return Column(
                             children: [
                               SliderTheme(
@@ -86,22 +89,21 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                   trackHeight: 2,
                                 ),
                                 child: Slider(
-                                  max: player.duration != null ? player.duration!.inSeconds.toDouble() : 0,
+                                  max: playerProvider.player.duration!.inMilliseconds.toDouble(),
                                   value: snapshot.data!.inSeconds.toDouble(),
                                   onChanged: (newPosition) {
-                                    player.seek(Duration(seconds: newPosition.toInt()));
+                                    playerProvider.player.seek(Duration(seconds: newPosition.toInt()));
                                   },
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 6),
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    MusicDurationWidget(songDurationInMilliseconds: snapshot.data!.inMilliseconds),
-                                    MusicDurationWidget(
-                                        songDurationInMilliseconds: player.duration != null ? player.duration!.inMilliseconds : 0),
-                                    // Text('0:00', style: TextStyle(color: Colors.grey)),
+                                    // MusicDurationWidget(songDurationInMilliseconds: snapshot.data!.inMilliseconds),
+                                    Text(songDuration, style: const TextStyle(color: Colors.grey)),
+                                    MusicDurationWidget(songDurationInMilliseconds: widget.songInfo.duration!),
                                   ],
                                 ),
                               )
@@ -113,7 +115,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       }),
                   // Playback Controls
                   StreamBuilder<PlayerState>(
-                    stream: player.playerStateStream,
+                    stream: playerProvider.player.playerStateStream,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         return Row(
@@ -123,18 +125,39 @@ class _PlayerScreenState extends State<PlayerScreen> {
                               isShuffleOn: false,
                               onChange: (newValue) {},
                             ),
-                            IconButton(onPressed: () {}, icon: const Icon(Icons.skip_previous_rounded, size: 34)),
+                            IconButton(
+                              onPressed: () {
+                                print(playerProvider.player.hasPrevious);
+                                playerProvider.player.seekToPrevious();
+                              },
+                              icon: const Icon(Icons.skip_previous_rounded, size: 34),
+                            ),
                             PlayButton(
                               isPlaying: snapshot.data!.playing,
                               onTap: () {
                                 if (snapshot.data!.playing) {
-                                  player.pause();
+                                  playerProvider.player.pause();
                                   return;
                                 }
-                                player.play();
+                                playerProvider.player.play();
                               },
                             ),
-                            IconButton(onPressed: () {}, icon: const Icon(Icons.skip_next_rounded, size: 34)),
+                            IconButton(
+                              onPressed: () {
+                                print(playerProvider.player.hasNext);
+                                playerProvider.player.seekToNext();
+
+                                print(playerProvider.player.currentIndex);
+                              },
+                              icon: const Icon(Icons.skip_next_rounded, size: 34),
+                            ),
+                            // StreamBuilder<SequenceState?>(
+                            //   stream: playerProvider.player.sequenceStateStream,
+                            //   builder: (context, snapshot) => IconButton(
+                            //     icon: const Icon(Icons.skip_next),
+                            //     onPressed: playerProvider.player.hasNext ? playerProvider.player.seekToNext : null,
+                            //   ),
+                            // ),
                             RepeatButton(
                               isRepeatOn: false,
                               onChange: (newValue) {},
