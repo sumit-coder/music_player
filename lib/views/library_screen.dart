@@ -51,6 +51,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => PlayerScreen(
+                            selectedIndex: index,
                             songInfo: playerProvider.listAudioFiles[index],
                           ),
                         ),
