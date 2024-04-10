@@ -1,6 +1,6 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:music_player/providers/player_provider.dart';
 import 'package:music_player/views/widgets/music_duration_widget.dart';
@@ -8,7 +8,6 @@ import 'package:music_player/views/widgets/player_widgets/play_button.dart';
 import 'package:music_player/views/widgets/player_widgets/repeat_button.dart';
 import 'package:music_player/views/widgets/player_widgets/shuffle_button.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:provider/provider.dart';
 
 class PlayerScreen extends StatefulWidget {
   final SongModel songInfo;
@@ -129,7 +128,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                           );
                         }
 
-                        return Text("data");
+                        return const Text("data");
                       }),
                   // Playback Controls
                   StreamBuilder<PlayerState>(
