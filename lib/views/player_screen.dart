@@ -1,4 +1,6 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:music_player/providers/player_provider.dart';
 import 'package:music_player/views/widgets/music_duration_widget.dart';
@@ -6,22 +8,31 @@ import 'package:music_player/views/widgets/player_widgets/play_button.dart';
 import 'package:music_player/views/widgets/player_widgets/repeat_button.dart';
 import 'package:music_player/views/widgets/player_widgets/shuffle_button.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:provider/provider.dart';
 
 class PlayerScreen extends StatefulWidget {
   final SongModel songInfo;
+  final int selectedIndex;
 
-  const PlayerScreen({super.key, required this.songInfo});
+  const PlayerScreen({super.key, required this.songInfo, required this.selectedIndex});
 
   @override
   State<PlayerScreen> createState() => _PlayerScreenState();
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
+  int activeAudioFileIndex = 0;
+
+  @override
+  void initState() {
+    activeAudioFileIndex = widget.selectedIndex;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var playerProvider = Provider.of<PlayerProvider>(context);
     var size = MediaQuery.of(context).size;
+    SongModel activeAudioFile = playerProvider.listAudioFiles[activeAudioFileIndex];
     return Scaffold(
       backgroundColor: Colors.grey.shade900,
       body: SafeArea(
@@ -41,7 +52,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       // controller: _audioQuery,
                       artworkHeight: 300,
                       artworkWidth: size.width * 0.80,
-                      id: widget.songInfo.id,
+                      id: activeAudioFile.id,
                       type: ArtworkType.AUDIO,
                       artworkBorder: BorderRadius.circular(12),
                       quality: 100,
@@ -53,8 +64,14 @@ class _PlayerScreenState extends State<PlayerScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(widget.songInfo.title, style: const TextStyle(fontSize: 18, color: Colors.grey)),
-                      Text(widget.songInfo.artist.toString(), style: const TextStyle(color: Colors.grey)),
+                      Text(
+                        activeAudioFile.title,
+                        style: const TextStyle(fontSize: 18, color: Colors.grey),
+                      ),
+                      Text(
+                        activeAudioFile.artist.toString(),
+                        style: const TextStyle(color: Colors.grey),
+                      ),
                     ],
                   ),
                   // Playback Timeline
@@ -89,7 +106,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                   trackHeight: 2,
                                 ),
                                 child: Slider(
-                                  max: playerProvider.player.duration!.inMilliseconds.toDouble(),
+                                  max: Duration(milliseconds: activeAudioFile.duration ?? 0).inSeconds.toDouble(),
                                   value: snapshot.data!.inSeconds.toDouble(),
                                   onChanged: (newPosition) {
                                     playerProvider.player.seek(Duration(seconds: newPosition.toInt()));
@@ -111,7 +128,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                           );
                         }
 
-                        return Text("data");
+                        return const Text("data");
                       }),
                   // Playback Controls
                   StreamBuilder<PlayerState>(
@@ -127,8 +144,12 @@ class _PlayerScreenState extends State<PlayerScreen> {
                             ),
                             IconButton(
                               onPressed: () {
-                                print(playerProvider.player.hasPrevious);
-                                playerProvider.player.seekToPrevious();
+                                if (playerProvider.player.hasPrevious) {
+                                  log("Prev Track Idx: ${playerProvider.player.hasNext}");
+                                  playerProvider.player.seekToPrevious();
+                                  activeAudioFileIndex--;
+                                  setState(() {});
+                                }
                               },
                               icon: const Icon(Icons.skip_previous_rounded, size: 34),
                             ),
@@ -144,20 +165,15 @@ class _PlayerScreenState extends State<PlayerScreen> {
                             ),
                             IconButton(
                               onPressed: () {
-                                print(playerProvider.player.hasNext);
-                                playerProvider.player.seekToNext();
-
-                                print(playerProvider.player.currentIndex);
+                                if (playerProvider.player.hasNext) {
+                                  log("Next Track Idx: ${playerProvider.player.hasNext}");
+                                  playerProvider.player.seekToNext();
+                                  activeAudioFileIndex++;
+                                  setState(() {});
+                                }
                               },
                               icon: const Icon(Icons.skip_next_rounded, size: 34),
                             ),
-                            // StreamBuilder<SequenceState?>(
-                            //   stream: playerProvider.player.sequenceStateStream,
-                            //   builder: (context, snapshot) => IconButton(
-                            //     icon: const Icon(Icons.skip_next),
-                            //     onPressed: playerProvider.player.hasNext ? playerProvider.player.seekToNext : null,
-                            //   ),
-                            // ),
                             RepeatButton(
                               isRepeatOn: false,
                               onChange: (newValue) {},
