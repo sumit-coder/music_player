@@ -6,6 +6,12 @@ class PlayerProvider with ChangeNotifier {
   List<SongModel> listAudioFiles = [];
   OnAudioQuery audioQuery = OnAudioQuery();
   AudioPlayer player = AudioPlayer();
+  int activeTrackIndex = 0;
+
+  setActiveTrackIndex(int newIndex) {
+    activeTrackIndex = newIndex;
+    notifyListeners();
+  }
 
   getAllMusicFiles() async {
     bool isPermissionGranted = await audioQuery.checkAndRequest();
