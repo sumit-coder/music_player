@@ -48,7 +48,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       return ListTile(
                         onTap: () {
                           playerProvider.player.seek(Duration.zero, index: index);
-
+                          playerProvider.setActiveTrackIndex(index);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -93,7 +93,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     left: 0,
                     right: 0,
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
                       height: 68,
                       color: Colors.grey.shade700,
                       child: Row(
@@ -121,7 +121,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                             children: [
                               IconButton(
                                 padding: EdgeInsets.zero,
-                                constraints: BoxConstraints(),
+                                constraints: const BoxConstraints(),
                                 style: const ButtonStyle(
                                   tapTargetSize: MaterialTapTargetSize.shrinkWrap, // the '2023' part
                                 ),
