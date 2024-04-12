@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:music_player/providers/player_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -88,58 +90,65 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     },
                   ),
                   // Current Playing Song Info
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      height: 68,
-                      color: Colors.grey.shade700,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              QueryArtworkWidget(
-                                controller: playerProvider.audioQuery,
-                                id: playerProvider.listAudioFiles[0].id,
-                                type: ArtworkType.AUDIO,
-                              ),
-                              const SizedBox(width: 8),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(playerProvider.listAudioFiles[0].title),
-                                  Text(playerProvider.listAudioFiles[0].artist!),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              IconButton(
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                style: const ButtonStyle(
-                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap, // the '2023' part
+                  if (playerProvider.activeTrackIndex != -1)
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        height: 68,
+                        color: Colors.grey.shade700,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                QueryArtworkWidget(
+                                  controller: playerProvider.audioQuery,
+                                  id: playerProvider.listAudioFiles[playerProvider.activeTrackIndex].id,
+                                  type: ArtworkType.AUDIO,
                                 ),
-                                onPressed: () {},
-                                icon: const Icon(Icons.play_arrow_rounded, size: 38),
-                              ),
-                              IconButton(
-                                // padding: EdgeInsets.zero,
-                                // constraints: BoxConstraints(),
-                                onPressed: () {},
-                                icon: const Icon(Icons.skip_next_rounded),
-                              ),
-                            ],
-                          )
-                        ],
+                                const SizedBox(width: 8),
+                                SizedBox(
+                                  width: 200,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        playerProvider.listAudioFiles[playerProvider.activeTrackIndex].title,
+                                        maxLines: 1,
+                                      ),
+                                      Text(playerProvider.listAudioFiles[playerProvider.activeTrackIndex].artist!),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                IconButton(
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                  style: const ButtonStyle(
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap, // the '2023' part
+                                  ),
+                                  onPressed: () {},
+                                  icon: const Icon(Icons.play_arrow_rounded, size: 38),
+                                ),
+                                IconButton(
+                                  // padding: EdgeInsets.zero,
+                                  // constraints: BoxConstraints(),
+                                  onPressed: () {},
+                                  icon: const Icon(Icons.skip_next_rounded),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
       ),
