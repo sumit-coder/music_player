@@ -123,30 +123,31 @@ class _PlayerScreenState extends State<PlayerScreen> {
                         return const Text("data");
                       }),
                   // Playback Controls
-                  StreamBuilder<PlayerState>(
-                    stream: playerProvider.player.playerStateStream,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            ShuffleButton(
-                              isShuffleOn: false,
-                              onChange: (newValue) {},
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                if (playerProvider.player.hasPrevious) {
-                                  log("Prev Track Idx: ${playerProvider.player.hasNext}");
-                                  playerProvider.player.seekToPrevious();
-                                  // activeAudioFileIndex--;
-                                  playerProvider.setActiveTrackIndex(playerProvider.activeTrackIndex--);
-                                  setState(() {});
-                                }
-                              },
-                              icon: const Icon(Icons.skip_previous_rounded, size: 34),
-                            ),
-                            PlayButton(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ShuffleButton(
+                        isShuffleOn: false,
+                        onChange: (newValue) {},
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          if (playerProvider.player.hasPrevious) {
+                            log("Prev Track Idx: ${playerProvider.player.hasNext}");
+                            playerProvider.player.seekToPrevious();
+                            // activeAudioFileIndex--;
+                            playerProvider.setActiveTrackIndex(playerProvider.activeTrackIndex--);
+                            setState(() {});
+                          }
+                        },
+                        icon: const Icon(Icons.skip_previous_rounded, size: 34),
+                      ),
+                      StreamBuilder<PlayerState>(
+                        stream: playerProvider.player.playerStateStream,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return PlayButton(
+                              iconSize: 48,
                               isPlaying: snapshot.data!.playing,
                               onTap: () {
                                 if (snapshot.data!.playing) {
@@ -155,29 +156,28 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                 }
                                 playerProvider.player.play();
                               },
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                if (playerProvider.player.hasNext) {
-                                  log("Next Track Idx: ${playerProvider.player.hasNext}");
-                                  playerProvider.player.seekToNext();
-                                  // activeAudioFileIndex++;
-                                  playerProvider.setActiveTrackIndex(playerProvider.activeTrackIndex++);
-                                  setState(() {});
-                                }
-                              },
-                              icon: const Icon(Icons.skip_next_rounded, size: 34),
-                            ),
-                            RepeatButton(
-                              isRepeatOn: false,
-                              onChange: (newValue) {},
-                            ),
-                          ],
-                        );
-                      }
-
-                      return const Text("Error");
-                    },
+                            );
+                          }
+                          return PlayButton(isPlaying: false, onTap: () {});
+                        },
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          if (playerProvider.player.hasNext) {
+                            log("Next Track Idx: ${playerProvider.player.hasNext}");
+                            playerProvider.player.seekToNext();
+                            // activeAudioFileIndex++;
+                            playerProvider.setActiveTrackIndex(playerProvider.activeTrackIndex++);
+                            setState(() {});
+                          }
+                        },
+                        icon: const Icon(Icons.skip_next_rounded, size: 34),
+                      ),
+                      RepeatButton(
+                        isRepeatOn: false,
+                        onChange: (newValue) {},
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 50)
                 ],

@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:music_player/providers/player_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:music_player/views/player_screen.dart';
 import 'package:music_player/views/widgets/music_duration_widget.dart';
+
+import 'widgets/player_widgets/play_button.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -128,14 +131,24 @@ class _LibraryScreenState extends State<LibraryScreen> {
                             ),
                             Row(
                               children: [
-                                IconButton(
-                                  padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(),
-                                  style: const ButtonStyle(
-                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap, // the '2023' part
-                                  ),
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.play_arrow_rounded, size: 38),
+                                StreamBuilder<PlayerState>(
+                                  stream: playerProvider.player.playerStateStream,
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      return PlayButton(
+                                        iconSize: 28,
+                                        isPlaying: snapshot.data!.playing,
+                                        onTap: () {
+                                          if (snapshot.data!.playing) {
+                                            playerProvider.player.pause();
+                                            return;
+                                          }
+                                          playerProvider.player.play();
+                                        },
+                                      );
+                                    }
+                                    return PlayButton(isPlaying: false, onTap: () {});
+                                  },
                                 ),
                                 IconButton(
                                   // padding: EdgeInsets.zero,
