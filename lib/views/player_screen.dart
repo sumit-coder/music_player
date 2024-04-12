@@ -20,19 +20,11 @@ class PlayerScreen extends StatefulWidget {
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
-  int activeAudioFileIndex = 0;
-
-  @override
-  void initState() {
-    activeAudioFileIndex = widget.selectedIndex;
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     var playerProvider = Provider.of<PlayerProvider>(context);
     var size = MediaQuery.of(context).size;
-    SongModel activeAudioFile = playerProvider.listAudioFiles[activeAudioFileIndex];
+    SongModel activeAudioFile = playerProvider.listAudioFiles[playerProvider.activeTrackIndex];
     return Scaffold(
       backgroundColor: Colors.grey.shade900,
       body: SafeArea(
@@ -147,7 +139,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                 if (playerProvider.player.hasPrevious) {
                                   log("Prev Track Idx: ${playerProvider.player.hasNext}");
                                   playerProvider.player.seekToPrevious();
-                                  activeAudioFileIndex--;
+                                  // activeAudioFileIndex--;
+                                  playerProvider.setActiveTrackIndex(playerProvider.activeTrackIndex--);
                                   setState(() {});
                                 }
                               },
@@ -168,7 +161,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                 if (playerProvider.player.hasNext) {
                                   log("Next Track Idx: ${playerProvider.player.hasNext}");
                                   playerProvider.player.seekToNext();
-                                  activeAudioFileIndex++;
+                                  // activeAudioFileIndex++;
+                                  playerProvider.setActiveTrackIndex(playerProvider.activeTrackIndex++);
                                   setState(() {});
                                 }
                               },
