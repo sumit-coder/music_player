@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -26,6 +28,20 @@ class PlayerProvider with ChangeNotifier {
         ],
       ),
     );
+
+    // listen to song end
+    player.positionStream.listen((state) {
+      log(state.toString());
+      log(state.toString() + player.duration.toString());
+      if (state == player.duration) {
+        log("state".toString());
+        if (player.hasNext) {
+          log("state2".toString());
+          activeTrackIndex++;
+          notifyListeners();
+        }
+      }
+    });
 
     notifyListeners();
   }
