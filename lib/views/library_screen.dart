@@ -33,12 +33,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   height: 54,
                   width: 200,
                   child: Center(
-                    child: TextButton(
+                    child: InkWell(
                       child: const Text(
                         "Get All Music",
                         style: TextStyle(color: Colors.grey),
                       ),
-                      onPressed: () async {
+                      onTap: () async {
                         playerProvider.getAllMusicFiles();
                       },
                     ),

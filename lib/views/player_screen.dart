@@ -136,7 +136,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                             log("Prev Track Idx: ${playerProvider.player.hasNext}");
                             playerProvider.player.seekToPrevious();
                             // activeAudioFileIndex--;
-                            playerProvider.setActiveTrackIndex(playerProvider.activeTrackIndex--);
+                            playerProvider.setActiveTrackIndex(playerProvider.activeTrackIndex - 1);
                             setState(() {});
                           }
                         },
@@ -167,7 +167,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                             log("Next Track Idx: ${playerProvider.player.hasNext}");
                             playerProvider.player.seekToNext();
                             // activeAudioFileIndex++;
-                            playerProvider.setActiveTrackIndex(playerProvider.activeTrackIndex++);
+                            playerProvider.setActiveTrackIndex(playerProvider.activeTrackIndex + 1);
                             setState(() {});
                           }
                         },
