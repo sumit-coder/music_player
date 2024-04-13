@@ -10,12 +10,8 @@ class MusicDurationWidget extends StatefulWidget {
 }
 
 class _MusicDurationWidgetState extends State<MusicDurationWidget> {
-  String songDuration = '';
-
   @override
-  void initState() {
-    // songDuration = Duration(milliseconds: widget.songDurationInMilliseconds).inMinutes.toString();
-
+  Widget build(BuildContext context) {
     int hours = Duration(milliseconds: widget.songDurationInMilliseconds).inHours;
     int minutes = Duration(milliseconds: widget.songDurationInMilliseconds).inMinutes % 60;
     int seconds = Duration(milliseconds: widget.songDurationInMilliseconds).inSeconds % 60;
@@ -24,12 +20,10 @@ class _MusicDurationWidgetState extends State<MusicDurationWidget> {
     String minuteString = minutes.toString().padLeft(2, '0');
     String secondString = seconds.toString().padLeft(2, '0');
 
-    songDuration = "$hourString$minuteString:$secondString";
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(songDuration, style: TextStyle(color: Colors.grey));
+    String songDuration = "$hourString$minuteString:$secondString";
+    return Text(
+      songDuration,
+      style: const TextStyle(color: Colors.grey),
+    );
   }
 }

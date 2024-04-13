@@ -72,52 +72,49 @@ class _PlayerScreenState extends State<PlayerScreen> {
               Column(
                 children: [
                   // Playback Timeline
+                  // Song playback position in Duration
                   StreamBuilder<Duration>(
                       stream: playerProvider.player.positionStream,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          // print(player.duration!.inSeconds / snapshot.data!.inSeconds);
-                          int hours = Duration(milliseconds: snapshot.data!.inMilliseconds).inHours;
-                          int minutes = Duration(milliseconds: snapshot.data!.inMilliseconds).inMinutes % 60;
-                          int seconds = Duration(milliseconds: snapshot.data!.inMilliseconds).inSeconds % 60;
-
-                          String hourString = hours > 0 ? "$hours:" : "";
-                          String minuteString = minutes.toString().padLeft(2, '0');
-                          String secondString = seconds.toString().padLeft(2, '0');
-
-                          String songDuration = "$hourString$minuteString:$secondString";
-                          return Column(
-                            children: [
-                              SliderTheme(
-                                data: SliderThemeData(
-                                  overlayShape: SliderComponentShape.noOverlay,
-                                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-                                  thumbColor: Colors.grey,
-                                  activeTrackColor: Colors.grey.shade600,
-                                  inactiveTrackColor: Colors.grey.shade800,
-                                  trackHeight: 2,
-                                ),
-                                child: Slider(
-                                  max: Duration(milliseconds: activeAudioFile.duration ?? 0).inSeconds.toDouble(),
-                                  value: snapshot.data!.inSeconds.toDouble(),
-                                  onChanged: (newPosition) {
-                                    playerProvider.player.seek(Duration(seconds: newPosition.toInt()));
-                                  },
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      builder: (context, positionStream) {
+                        if (positionStream.hasData) {
+                          return StreamBuilder<Duration?>(
+                              // current playing song Duration
+                              stream: playerProvider.player.durationStream,
+                              builder: (context, snapshot) {
+                                return Column(
                                   children: [
-                                    // MusicDurationWidget(songDurationInMilliseconds: snapshot.data!.inMilliseconds),
-                                    Text(songDuration, style: const TextStyle(color: Colors.grey)),
-                                    MusicDurationWidget(songDurationInMilliseconds: widget.songInfo.duration!),
+                                    SliderTheme(
+                                      data: SliderThemeData(
+                                        overlayShape: SliderComponentShape.noOverlay,
+                                        thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+                                        thumbColor: Colors.grey,
+                                        activeTrackColor: Colors.grey.shade600,
+                                        inactiveTrackColor: Colors.grey.shade800,
+                                        trackHeight: 2,
+                                      ),
+                                      child: Slider(
+                                        max: snapshot.data!.inSeconds.toDouble(),
+                                        value: positionStream.data!.inSeconds.toDouble(),
+                                        onChanged: (newPosition) {
+                                          playerProvider.player.seek(Duration(seconds: newPosition.toInt()));
+                                        },
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          // Current Position
+                                          MusicDurationWidget(songDurationInMilliseconds: positionStream.data!.inMilliseconds),
+                                          // Current Playing Song Duration
+                                          MusicDurationWidget(songDurationInMilliseconds: snapshot.data!.inMilliseconds),
+                                        ],
+                                      ),
+                                    )
                                   ],
-                                ),
-                              )
-                            ],
-                          );
+                                );
+                              });
                         }
 
                         return const Text("data");
