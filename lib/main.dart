@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => PlayerProvider()),
       ],
       child: MaterialApp(
-        showPerformanceOverlay: true,
+        showPerformanceOverlay: false,
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         themeMode: ThemeMode.dark,

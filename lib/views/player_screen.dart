@@ -38,18 +38,21 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 children: [
                   const SizedBox(height: 18),
                   // Music Cover Album
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: QueryArtworkWidget(
-                      // controller: _audioQuery,
-                      artworkHeight: 300,
-                      artworkWidth: size.width * 0.80,
-                      id: activeAudioFile.id,
-                      type: ArtworkType.AUDIO,
-                      artworkBorder: BorderRadius.circular(12),
-                      quality: 100,
-                      artworkQuality: FilterQuality.high,
-                      artworkFit: BoxFit.contain,
+                  Hero(
+                    tag: 'Album',
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: QueryArtworkWidget(
+                        // controller: _audioQuery,
+                        artworkHeight: 300,
+                        artworkWidth: size.width * 0.80,
+                        id: activeAudioFile.id,
+                        type: ArtworkType.AUDIO,
+                        artworkBorder: BorderRadius.circular(12),
+                        quality: 100,
+                        artworkQuality: FilterQuality.high,
+                        artworkFit: BoxFit.contain,
+                      ),
                     ),
                   ),
                   // Track Details
@@ -78,9 +81,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       builder: (context, positionStream) {
                         if (positionStream.hasData) {
                           return StreamBuilder<Duration?>(
-                              // current playing song Duration
-                              stream: playerProvider.player.durationStream,
-                              builder: (context, snapshot) {
+                            // current playing song Duration
+                            stream: playerProvider.player.durationStream,
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
                                 return Column(
                                   children: [
                                     SliderTheme(
@@ -114,7 +118,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                     )
                                   ],
                                 );
-                              });
+                              }
+                              return Container();
+                            },
+                          );
                         }
 
                         return const Text("data");

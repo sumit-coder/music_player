@@ -1,4 +1,5 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_audio/just_audio.dart';
@@ -18,6 +19,7 @@ class LibraryScreen extends StatefulWidget {
 }
 
 class _LibraryScreenState extends State<LibraryScreen> {
+  bool isFullPlayerMode = false;
   @override
   Widget build(BuildContext context) {
     var playerProvider = Provider.of<PlayerProvider>(context);
@@ -54,15 +56,17 @@ class _LibraryScreenState extends State<LibraryScreen> {
                         onTap: () {
                           playerProvider.player.seek(Duration.zero, index: index);
                           playerProvider.setActiveTrackIndex(index);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PlayerScreen(
-                                selectedIndex: index,
-                                songInfo: playerProvider.listAudioFiles[index],
-                              ),
-                            ),
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) => PlayerScreen(
+                          //       selectedIndex: index,
+                          //       songInfo: playerProvider.listAudioFiles[index],
+                          //     ),
+                          //   ),
+                          // );
+                          isFullPlayerMode = true;
+                          setState(() {});
                         },
                         leading: QueryArtworkWidget(
                           controller: playerProvider.audioQuery,
@@ -94,72 +98,90 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   ),
                   // Current Playing Song Info
                   if (playerProvider.activeTrackIndex != -1)
-                    Positioned(
+                    AnimatedPositioned(
+                      duration: Duration(milliseconds: 200),
                       bottom: 0,
                       left: 0,
                       right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        height: 68,
-                        color: Colors.grey.shade700,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                QueryArtworkWidget(
-                                  controller: playerProvider.audioQuery,
-                                  id: playerProvider.listAudioFiles[playerProvider.activeTrackIndex].id,
-                                  type: ArtworkType.AUDIO,
+                      top: isFullPlayerMode ? 0 : MediaQuery.of(context).size.height - 120,
+                      onEnd: () {},
+                      child: InkWell(
+                        onTap: () {
+                          isFullPlayerMode = !isFullPlayerMode;
+                          setState(() {});
+                          print('object');
+                        },
+                        child: isFullPlayerMode
+                            ? Padding(
+                                padding: const EdgeInsets.all(0.0),
+                                child: PlayerScreen(songInfo: playerProvider.listAudioFiles[0], selectedIndex: 0),
+                              )
+                            : Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12),
+                                height: 68,
+                                color: Colors.grey.shade800,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Hero(
+                                          tag: 'Album',
+                                          child: QueryArtworkWidget(
+                                            controller: playerProvider.audioQuery,
+                                            id: playerProvider.listAudioFiles[playerProvider.activeTrackIndex].id,
+                                            type: ArtworkType.AUDIO,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        SizedBox(
+                                          width: 200,
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                playerProvider.listAudioFiles[playerProvider.activeTrackIndex].title,
+                                                maxLines: 1,
+                                              ),
+                                              Text(playerProvider.listAudioFiles[playerProvider.activeTrackIndex].artist!),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        StreamBuilder<PlayerState>(
+                                          stream: playerProvider.player.playerStateStream,
+                                          builder: (context, snapshot) {
+                                            if (snapshot.hasData) {
+                                              return PlayButton(
+                                                iconSize: 28,
+                                                isPlaying: snapshot.data!.playing,
+                                                onTap: () {
+                                                  if (snapshot.data!.playing) {
+                                                    playerProvider.player.pause();
+                                                    return;
+                                                  }
+                                                  playerProvider.player.play();
+                                                },
+                                              );
+                                            }
+                                            return PlayButton(isPlaying: false, onTap: () {});
+                                          },
+                                        ),
+                                        IconButton(
+                                          // padding: EdgeInsets.zero,
+                                          // constraints: BoxConstraints(),
+                                          onPressed: () {},
+                                          icon: const Icon(Icons.skip_next_rounded),
+                                        ),
+                                      ],
+                                    )
+                                  ],
                                 ),
-                                const SizedBox(width: 8),
-                                SizedBox(
-                                  width: 200,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        playerProvider.listAudioFiles[playerProvider.activeTrackIndex].title,
-                                        maxLines: 1,
-                                      ),
-                                      Text(playerProvider.listAudioFiles[playerProvider.activeTrackIndex].artist!),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                StreamBuilder<PlayerState>(
-                                  stream: playerProvider.player.playerStateStream,
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData) {
-                                      return PlayButton(
-                                        iconSize: 28,
-                                        isPlaying: snapshot.data!.playing,
-                                        onTap: () {
-                                          if (snapshot.data!.playing) {
-                                            playerProvider.player.pause();
-                                            return;
-                                          }
-                                          playerProvider.player.play();
-                                        },
-                                      );
-                                    }
-                                    return PlayButton(isPlaying: false, onTap: () {});
-                                  },
-                                ),
-                                IconButton(
-                                  // padding: EdgeInsets.zero,
-                                  // constraints: BoxConstraints(),
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.skip_next_rounded),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
+                              ),
                       ),
                     ),
                 ],
