@@ -10,10 +10,11 @@ import 'package:music_player/views/widgets/player_widgets/shuffle_button.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 class PlayerScreen extends StatefulWidget {
+  const PlayerScreen({super.key, required this.songInfo, required this.selectedIndex, required this.onTapDropDown});
+
   final SongModel songInfo;
   final int selectedIndex;
-
-  const PlayerScreen({super.key, required this.songInfo, required this.selectedIndex});
+  final VoidCallback onTapDropDown;
 
   @override
   State<PlayerScreen> createState() => _PlayerScreenState();
@@ -27,6 +28,21 @@ class _PlayerScreenState extends State<PlayerScreen> {
     SongModel activeAudioFile = playerProvider.listAudioFiles[playerProvider.activeTrackIndex];
     return Scaffold(
       backgroundColor: Colors.grey.shade900,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        leading: IconButton(
+          onPressed: () {
+            widget.onTapDropDown();
+          },
+          icon: Icon(Icons.keyboard_arrow_down_rounded, size: 38, color: Colors.grey.shade800),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.more_vert_rounded, size: 30, color: Colors.grey.shade800),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18),

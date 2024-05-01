@@ -1,7 +1,4 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:music_player/providers/player_provider.dart';
 import 'package:provider/provider.dart';
@@ -56,15 +53,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                         onTap: () {
                           playerProvider.player.seek(Duration.zero, index: index);
                           playerProvider.setActiveTrackIndex(index);
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) => PlayerScreen(
-                          //       selectedIndex: index,
-                          //       songInfo: playerProvider.listAudioFiles[index],
-                          //     ),
-                          //   ),
-                          // );
+
                           isFullPlayerMode = true;
                           setState(() {});
                         },
@@ -90,6 +79,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
                             ),
                             const Text(" - "),
                             MusicDurationWidget(songDurationInMilliseconds: playerProvider.listAudioFiles[index].duration ?? 0),
+                            if (index == playerProvider.activeTrackIndex)
+                              const Padding(
+                                padding: EdgeInsets.only(left: 8.0),
+                                child: Icon(Icons.graphic_eq, size: 18),
+                              )
                             // Text(Duration(milliseconds: playerProvider.listFiles[index].duration ?? 0).inMinutes.toString()),
                           ],
                         ),
@@ -99,27 +93,30 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   // Current Playing Song Info
                   if (playerProvider.activeTrackIndex != -1)
                     AnimatedPositioned(
-                      duration: Duration(milliseconds: 200),
+                      duration: const Duration(milliseconds: 300),
                       bottom: 0,
                       left: 0,
                       right: 0,
                       top: isFullPlayerMode ? 0 : MediaQuery.of(context).size.height - 120,
                       onEnd: () {},
-                      child: InkWell(
-                        onTap: () {
-                          isFullPlayerMode = !isFullPlayerMode;
-                          setState(() {});
-                          print('object');
-                        },
-                        child: isFullPlayerMode
-                            ? Padding(
-                                padding: const EdgeInsets.all(0.0),
-                                child: PlayerScreen(songInfo: playerProvider.listAudioFiles[0], selectedIndex: 0),
-                              )
-                            : Container(
+                      child: isFullPlayerMode
+                          ? PlayerScreen(
+                              songInfo: playerProvider.listAudioFiles[0],
+                              selectedIndex: 0,
+                              onTapDropDown: () {
+                                isFullPlayerMode = !isFullPlayerMode;
+                                setState(() {});
+                              },
+                            )
+                          : InkWell(
+                              onTap: () {
+                                isFullPlayerMode = !isFullPlayerMode;
+                                setState(() {});
+                              },
+                              child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12),
                                 height: 68,
-                                color: Colors.grey.shade800,
+                                color: const Color.fromARGB(255, 47, 47, 47),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
@@ -182,7 +179,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                                   ],
                                 ),
                               ),
-                      ),
+                            ),
                     ),
                 ],
               ),
