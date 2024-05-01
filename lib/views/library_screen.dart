@@ -53,15 +53,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                         onTap: () {
                           playerProvider.player.seek(Duration.zero, index: index);
                           playerProvider.setActiveTrackIndex(index);
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) => PlayerScreen(
-                          //       selectedIndex: index,
-                          //       songInfo: playerProvider.listAudioFiles[index],
-                          //     ),
-                          //   ),
-                          // );
+
                           isFullPlayerMode = true;
                           setState(() {});
                         },
@@ -87,6 +79,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
                             ),
                             const Text(" - "),
                             MusicDurationWidget(songDurationInMilliseconds: playerProvider.listAudioFiles[index].duration ?? 0),
+                            if (index == playerProvider.activeTrackIndex)
+                              const Padding(
+                                padding: EdgeInsets.only(left: 8.0),
+                                child: Icon(Icons.graphic_eq, size: 18),
+                              )
                             // Text(Duration(milliseconds: playerProvider.listFiles[index].duration ?? 0).inMinutes.toString()),
                           ],
                         ),
@@ -103,16 +100,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       top: isFullPlayerMode ? 0 : MediaQuery.of(context).size.height - 120,
                       onEnd: () {},
                       child: isFullPlayerMode
-                          ? Padding(
-                              padding: const EdgeInsets.all(0.0),
-                              child: PlayerScreen(
-                                songInfo: playerProvider.listAudioFiles[0],
-                                selectedIndex: 0,
-                                onTapDropDown: () {
-                                  isFullPlayerMode = !isFullPlayerMode;
-                                  setState(() {});
-                                },
-                              ),
+                          ? PlayerScreen(
+                              songInfo: playerProvider.listAudioFiles[0],
+                              selectedIndex: 0,
+                              onTapDropDown: () {
+                                isFullPlayerMode = !isFullPlayerMode;
+                                setState(() {});
+                              },
                             )
                           : InkWell(
                               onTap: () {
@@ -122,7 +116,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12),
                                 height: 68,
-                                color: Colors.grey.shade800,
+                                color: const Color.fromARGB(255, 47, 47, 47),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
