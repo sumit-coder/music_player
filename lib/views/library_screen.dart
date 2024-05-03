@@ -17,6 +17,14 @@ class LibraryScreen extends StatefulWidget {
 
 class _LibraryScreenState extends State<LibraryScreen> {
   bool isFullPlayerMode = false;
+
+  @override
+  void initState() {
+    var playerProvider = Provider.of<PlayerProvider>(context, listen: false);
+    playerProvider.getAllMusicFiles();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var playerProvider = Provider.of<PlayerProvider>(context);
