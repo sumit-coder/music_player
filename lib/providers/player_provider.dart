@@ -1,7 +1,10 @@
 import 'dart:developer';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 class PlayerProvider with ChangeNotifier {
@@ -21,12 +24,37 @@ class PlayerProvider with ChangeNotifier {
       listAudioFiles = await audioQuery.querySongs();
     }
 
+    List<AudioSource> listOfAudioSources = [];
+
+    for (var audioInfo in listAudioFiles) {
+      Uint8List? artWork = await audioQuery.queryArtwork(audioInfo.id, ArtworkType.AUDIO);
+
+      listOfAudioSources.add(AudioSource.uri(
+        Uri.file(audioInfo.data),
+        tag: MediaItem(
+          id: '${audioInfo.albumId}',
+          album: audioInfo.album ?? "NA",
+          title: audioInfo.title,
+          artUri: artWork != null ? Uri.file(File.fromRawPath(artWork).path) : null,
+        ),
+      ));
+    }
+
     player.setAudioSource(
-      ConcatenatingAudioSource(
-        children: [
-          for (SongModel filePath in listAudioFiles) AudioSource.file(filePath.data),
-        ],
-      ),
+      ConcatenatingAudioSource(children: listOfAudioSources
+          // children: [
+          //   for (SongModel filePath in listAudioFiles)
+          // AudioSource.uri(
+          //   Uri.file(filePath.data),
+          //   tag: MediaItem(
+          //     id: '${filePath.albumId}',
+          //     album: filePath.album ?? "NA",
+          //     title: filePath.title,
+          //     artUri: Uri.file(audioQuery.),
+          //   ),
+          // ),
+          // ],
+          ),
     );
 
     // listen to song end

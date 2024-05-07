@@ -1,5 +1,8 @@
 import 'dart:developer';
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:music_player/providers/player_provider.dart';
@@ -38,7 +41,20 @@ class _PlayerScreenState extends State<PlayerScreen> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () async {
+              // Uint8List? data = await playerProvider.audioQuery.queryArtwork(activeAudioFile.id, ArtworkType.AUDIO);
+              // final directory = await getApplicationDocumentsDirectory();
+
+              // // File fileData = File('${directory.path}/demo-art.png');
+              // // await fileData.writeAsBytes(data!);
+              // // // print(File.fromRawPath(data!).path);
+              // // print(fileData.path);
+              // print(directory.listSync().length);
+
+              // for (var item in directory.listSync(recursive: true)) {
+              //   print(item.path);
+              // }
+            },
             icon: Icon(Icons.more_vert_rounded, size: 30, color: Colors.grey.shade800),
           ),
         ],
