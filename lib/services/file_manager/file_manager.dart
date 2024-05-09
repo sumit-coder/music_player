@@ -3,8 +3,10 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:music_player/global_const.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FileManager with ChangeNotifier {
   List<SongModel> listFiles = [];
@@ -15,6 +17,9 @@ class FileManager with ChangeNotifier {
     if (isPermissionGranted) {
       listFiles = await audioQuery.querySongs();
     }
+
+    // Save AlbumArt for all of Music Files
+    await saveAlbumArtsToCacheDirectory(listFiles);
 
     notifyListeners();
   }
@@ -27,33 +32,15 @@ class FileManager with ChangeNotifier {
     for (var audioFile in listOfAudioFiles) {
       Uint8List? data = await audioQuery.queryArtwork(audioFile.id, ArtworkType.AUDIO);
 
-      File fileData = File('$fullPathToStoreAlbumArts/${audioFile.id}.png');
-      File fileAfterSaved = await fileData.writeAsBytes(data!);
+      if (data != null) {
+        File fileData = await File('$fullPathToStoreAlbumArts/${audioFile.id}.png').create(recursive: true);
+        File fileAfterSaved = await fileData.writeAsBytes(data);
 
-      listOfSavedAlbumArtPath.add(fileAfterSaved.path);
-      log(fileAfterSaved.path);
+        listOfSavedAlbumArtPath.add(fileAfterSaved.path);
+        log(fileAfterSaved.path);
+      }
     }
 
     return listOfSavedAlbumArtPath;
   }
-
-  // initFiles() async {
-  //   var directory = await getDownloadsDirectory();
-  //   // print(desktopFiles);
-  //   desktopFiles = Directory("storage/emulated/0/").listSync(recursive: true);
-  //   // desktopFiles = directory!.listSync(recursive: true);
-  //   print(desktopFiles.toString() + "asdf");
-  //   if (desktopFiles != null) {
-  //     for (var fileInfo in desktopFiles!) {
-  //       String filePath = fileInfo.path;
-  //       String fileName = filePath.split("/").last;
-  //       String fileType = fileName.split(".").last;
-
-  //       if (fileType == 'mp3') {
-  //         listFiles.add({'filePath': filePath, 'fileName': fileName, 'fileType': fileType});
-  //       }
-  //     }
-  //   }
-  //   notifyListeners();
-  // }
 }
