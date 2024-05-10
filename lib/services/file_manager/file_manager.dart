@@ -1,20 +1,37 @@
-import 'dart:developer';
 import 'dart:io';
+import 'dart:developer';
 import 'dart:typed_data';
 import 'package:music_player/global_const.dart';
+import 'package:music_player/model/audio_file_model.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:path_provider/path_provider.dart';
 
 class FileManager {
   /// to get all of music files from the device
-  static Future<List<SongModel>> getAllMusicFiles() async {
+  static Future<List<AudioFile>> getAllMusicFiles() async {
     final OnAudioQuery audioQuery = OnAudioQuery();
     bool isPermissionGranted = await audioQuery.checkAndRequest();
     if (isPermissionGranted) {
-      List<SongModel> listFiles = await audioQuery.querySongs();
+      List<SongModel> listOfSongModels = await audioQuery.querySongs();
+      List<AudioFile> listSongFilesToSend = [];
 
-      await saveAlbumArtsToCacheDirectory(listFiles);
-      return listFiles;
+      // Saving AlbumArt to Offline Storage
+      await saveAlbumArtsToCacheDirectory(listOfSongModels);
+      String albumArtDirectory = await GlobalConst.getAlbumArtDirectory();
+
+      for (SongModel songInfo in listOfSongModels) {
+        listSongFilesToSend.add(
+          AudioFile(
+            id: songInfo.id,
+            title: songInfo.title,
+            artist: songInfo.artist ?? "NA",
+            audioPath: songInfo.data,
+            albumArtUrl: "$albumArtDirectory/${songInfo.id}.png", // at this place albumArt Should be
+            duration: songInfo.duration ?? -1,
+            size: songInfo.size,
+          ),
+        );
+      }
+      return listSongFilesToSend;
     }
 
     return [];
@@ -23,7 +40,6 @@ class FileManager {
   static Future<List<String>> saveAlbumArtsToCacheDirectory(List<SongModel> listOfAudioFiles) async {
     final OnAudioQuery audioQuery = OnAudioQuery();
     List<String> listOfSavedAlbumArtPath = [];
-    var directory = await getApplicationCacheDirectory();
     String fullPathToStoreAlbumArts = await GlobalConst.getAlbumArtDirectory();
 
     for (var audioFile in listOfAudioFiles) {

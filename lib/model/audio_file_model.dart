@@ -1,13 +1,21 @@
 class AudioFile {
-  int? id;
-  String? title;
-  String? artist;
-  String? audioPath;
-  String? albumArtUrl;
-  int? duration;
-  int? size;
+  late int id;
+  late String title;
+  late String artist;
+  late String audioPath;
+  late String albumArtUrl;
+  late int duration;
+  late int size;
 
-  AudioFile({this.id, this.title, this.artist, this.audioPath, this.albumArtUrl, this.duration, this.size});
+  AudioFile({
+    required this.id,
+    required this.title,
+    required this.artist,
+    required this.audioPath,
+    required this.albumArtUrl,
+    required this.duration,
+    required this.size,
+  });
 
   AudioFile.fromJson(Map<String, dynamic> json) {
     id = json['id'];

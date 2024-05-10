@@ -1,18 +1,14 @@
 import 'dart:developer';
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:music_player/global_const.dart';
-import 'package:music_player/services/file_manager/file_manager.dart';
+import 'package:music_player/model/audio_file_model.dart';
 import 'package:music_player/services/offline_db/offline_db.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:path_provider/path_provider.dart';
 
 class PlayerProvider with ChangeNotifier {
-  List<SongModel> listAudioFiles = [];
+  List<AudioFile> listAudioFiles = [];
   OnAudioQuery audioQuery = OnAudioQuery();
   AudioPlayer player = AudioPlayer();
   int activeTrackIndex = -1;
@@ -37,13 +33,14 @@ class PlayerProvider with ChangeNotifier {
     List<AudioSource> listOfAudioSources = [];
 
     for (var audioInfo in listAudioFiles) {
-      Uint8List? artWork = await audioQuery.queryArtwork(audioInfo.id, ArtworkType.AUDIO);
+      // Uint8List? artWork = await audioQuery.queryArtwork(audioInfo.id, ArtworkType.AUDIO);
 
       listOfAudioSources.add(AudioSource.uri(
-        Uri.file(audioInfo.data),
+        Uri.file(audioInfo.audioPath),
         tag: MediaItem(
-          id: '${audioInfo.albumId}',
-          album: audioInfo.album ?? "NA",
+          id: '${audioInfo.id}',
+          album: audioInfo.artist,
+          artist: audioInfo.artist,
           title: audioInfo.title,
           artUri: Uri.file('$fullPathToStoreAlbumArts/${audioInfo.id}.png'),
         ),
