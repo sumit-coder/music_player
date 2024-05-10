@@ -15,8 +15,7 @@ class OfflineDB {
     List<String> listOfSongInfo = sharedPreferences.getStringList(GlobalConst.offlineMusicInfoDbName) ?? [];
 
     for (var songInfo in listOfSongInfo) {
-      log(jsonEncode(songInfo));
-      log(songInfo);
+      log("Song From OfflineDB: $songInfo");
       // decode offline saved AudioFile Info
       dataToSend.add(AudioFile.fromJson(json.decode(songInfo)));
     }
@@ -29,6 +28,7 @@ class OfflineDB {
   static Future<List<AudioFile>> getMusicFromDeviceAndSaveToOfflineDB() async {
     List<AudioFile> queriedSongs = await FileManager.getAllMusicFiles();
 
+    log("Got All of Song from Device Count: ${queriedSongs.length}");
     // Send all songs to be stored in OfflineDB
     await setMusicInfoToOfflineDB(queriedSongs);
 
@@ -42,9 +42,10 @@ class OfflineDB {
     List<String> dataToStore = [];
 
     for (AudioFile songInfo in listOfSongModels) {
-      dataToStore.add(songInfo.toJson().toString());
+      dataToStore.add(json.encode(songInfo.toJson()));
     }
 
     await sharedPreferences.setStringList(GlobalConst.offlineMusicInfoDbName, dataToStore);
+    log("Saved Songs to OfflineDB Count: ${dataToStore.length}");
   }
 }

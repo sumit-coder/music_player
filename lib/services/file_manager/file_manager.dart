@@ -11,6 +11,7 @@ class FileManager {
     final OnAudioQuery audioQuery = OnAudioQuery();
     bool isPermissionGranted = await audioQuery.checkAndRequest();
     if (isPermissionGranted) {
+      log("Querying Songs From Device");
       List<SongModel> listOfSongModels = await audioQuery.querySongs();
       List<AudioFile> listSongFilesToSend = [];
 
@@ -31,6 +32,7 @@ class FileManager {
           ),
         );
       }
+      log("Got Songs From Device Count: ${listSongFilesToSend.length}");
       return listSongFilesToSend;
     }
 
@@ -50,7 +52,7 @@ class FileManager {
         File fileAfterSaved = await fileData.writeAsBytes(data);
 
         listOfSavedAlbumArtPath.add(fileAfterSaved.path);
-        log(fileAfterSaved.path);
+        log("Saved Song AlbumArt at: ${fileAfterSaved.path}");
       }
     }
 
