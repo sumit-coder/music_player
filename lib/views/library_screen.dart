@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:music_player/providers/player_provider.dart';
@@ -5,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:music_player/views/player_screen.dart';
 import 'package:music_player/views/widgets/music_duration_widget.dart';
-
 import 'widgets/player_widgets/play_button.dart';
 
 class LibraryScreen extends StatefulWidget {
@@ -65,10 +65,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
                           isFullPlayerMode = true;
                           setState(() {});
                         },
-                        leading: QueryArtworkWidget(
-                          controller: playerProvider.audioQuery,
-                          id: playerProvider.listAudioFiles[index].id,
-                          type: ArtworkType.AUDIO,
+                        leading: Image.file(
+                          File.fromUri(
+                            Uri.file(playerProvider.listAudioFiles[index].albumArtUrl),
+                          ),
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.audio_file, size: 56);
+                          },
                         ),
                         title: Text(
                           playerProvider.listAudioFiles[index].title.toString(),

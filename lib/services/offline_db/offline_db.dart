@@ -15,7 +15,7 @@ class OfflineDB {
     List<String> listOfSongInfo = sharedPreferences.getStringList(GlobalConst.offlineMusicInfoDbName) ?? [];
 
     for (var songInfo in listOfSongInfo) {
-      log("Song From OfflineDB: $songInfo");
+      log("Got Song From OfflineDB: ${songInfo.substring(0, 52)}...");
       // decode offline saved AudioFile Info
       dataToSend.add(AudioFile.fromJson(json.decode(songInfo)));
     }

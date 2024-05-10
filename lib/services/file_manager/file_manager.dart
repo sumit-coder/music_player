@@ -45,7 +45,11 @@ class FileManager {
     String fullPathToStoreAlbumArts = await GlobalConst.getAlbumArtDirectory();
 
     for (var audioFile in listOfAudioFiles) {
-      Uint8List? data = await audioQuery.queryArtwork(audioFile.id, ArtworkType.AUDIO);
+      Uint8List? data = await audioQuery.queryArtwork(
+        audioFile.id,
+        ArtworkType.AUDIO,
+        format: ArtworkFormat.PNG,
+      );
 
       if (data != null) {
         File fileData = await File('$fullPathToStoreAlbumArts/${audioFile.id}.png').create(recursive: true);

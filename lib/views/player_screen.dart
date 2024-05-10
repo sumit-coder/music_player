@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:music_player/model/audio_file_model.dart';
 import 'package:provider/provider.dart';
@@ -75,16 +76,26 @@ class _PlayerScreenState extends State<PlayerScreen> {
                     tag: 'Album',
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: QueryArtworkWidget(
-                        // controller: _audioQuery,
-                        artworkHeight: 300,
-                        artworkWidth: size.width * 0.80,
-                        id: activeAudioFile.id,
-                        type: ArtworkType.AUDIO,
-                        artworkBorder: BorderRadius.circular(12),
-                        quality: 100,
-                        artworkQuality: FilterQuality.high,
-                        artworkFit: BoxFit.contain,
+                      // child: QueryArtworkWidget(
+                      //   // controller: _audioQuery,
+                      //   artworkHeight: 300,
+                      //   artworkWidth: size.width * 0.80,
+                      //   id: activeAudioFile.id,
+                      //   type: ArtworkType.AUDIO,
+                      //   artworkBorder: BorderRadius.circular(12),
+                      //   quality: 100,
+                      //   artworkQuality: FilterQuality.high,
+                      //   artworkFit: BoxFit.contain,
+                      // ),
+                      child: Image.file(
+                        File.fromUri(Uri.file(activeAudioFile.albumArtUrl)),
+                        height: 300,
+                        width: size.width * 0.80,
+                        fit: BoxFit.cover,
+                        filterQuality: FilterQuality.high,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.audio_file, size: 56);
+                        },
                       ),
                     ),
                   ),
