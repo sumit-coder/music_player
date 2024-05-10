@@ -1,5 +1,7 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:music_player/model/audio_file_model.dart';
 import 'package:provider/provider.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:music_player/providers/player_provider.dart';
@@ -8,11 +10,12 @@ import 'package:music_player/views/widgets/player_widgets/play_button.dart';
 import 'package:music_player/views/widgets/player_widgets/repeat_button.dart';
 import 'package:music_player/views/widgets/player_widgets/shuffle_button.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PlayerScreen extends StatefulWidget {
   const PlayerScreen({super.key, required this.songInfo, required this.selectedIndex, required this.onTapDropDown});
 
-  final SongModel songInfo;
+  final AudioFile songInfo;
   final int selectedIndex;
   final VoidCallback onTapDropDown;
 
@@ -25,7 +28,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   Widget build(BuildContext context) {
     var playerProvider = Provider.of<PlayerProvider>(context);
     var size = MediaQuery.of(context).size;
-    SongModel activeAudioFile = playerProvider.listAudioFiles[playerProvider.activeTrackIndex];
+    AudioFile activeAudioFile = playerProvider.listAudioFiles[playerProvider.activeTrackIndex];
     return Scaffold(
       backgroundColor: Colors.grey.shade900,
       appBar: AppBar(
@@ -39,6 +42,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
         actions: [
           IconButton(
             onPressed: () async {
+              var spf = await SharedPreferences.getInstance();
+              spf.setStringList("MusicFiles", []);
               // Uint8List? data = await playerProvider.audioQuery.queryArtwork(activeAudioFile.id, ArtworkType.AUDIO);
               // final directory = await getApplicationDocumentsDirectory();
 
@@ -49,7 +54,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
               // print(directory.listSync().length);
 
               // for (var item in directory.listSync(recursive: true)) {
-              //   print(item.path);
+              // print("item.path");
               // }
             },
             icon: Icon(Icons.more_vert_rounded, size: 30, color: Colors.grey.shade800),
@@ -71,16 +76,26 @@ class _PlayerScreenState extends State<PlayerScreen> {
                     tag: 'Album',
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: QueryArtworkWidget(
-                        // controller: _audioQuery,
-                        artworkHeight: 300,
-                        artworkWidth: size.width * 0.80,
-                        id: activeAudioFile.id,
-                        type: ArtworkType.AUDIO,
-                        artworkBorder: BorderRadius.circular(12),
-                        quality: 100,
-                        artworkQuality: FilterQuality.high,
-                        artworkFit: BoxFit.contain,
+                      // child: QueryArtworkWidget(
+                      //   // controller: _audioQuery,
+                      //   artworkHeight: 300,
+                      //   artworkWidth: size.width * 0.80,
+                      //   id: activeAudioFile.id,
+                      //   type: ArtworkType.AUDIO,
+                      //   artworkBorder: BorderRadius.circular(12),
+                      //   quality: 100,
+                      //   artworkQuality: FilterQuality.high,
+                      //   artworkFit: BoxFit.contain,
+                      // ),
+                      child: Image.file(
+                        File.fromUri(Uri.file(activeAudioFile.albumArtUrl)),
+                        height: 300,
+                        width: size.width * 0.80,
+                        fit: BoxFit.cover,
+                        filterQuality: FilterQuality.high,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.audio_file, size: 56);
+                        },
                       ),
                     ),
                   ),

@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => FileManager()),
+        // ChangeNotifierProvider(create: (context) => FileManager()),
         ChangeNotifierProvider(create: (context) => PlayerProvider()),
       ],
       child: MaterialApp(
