@@ -5,7 +5,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:music_player/global_const.dart';
 import 'package:music_player/services/file_manager/file_manager.dart';
+import 'package:music_player/services/offline_db/offline_db.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -14,24 +16,25 @@ class PlayerProvider with ChangeNotifier {
   OnAudioQuery audioQuery = OnAudioQuery();
   AudioPlayer player = AudioPlayer();
   int activeTrackIndex = -1;
+  bool isOfflineDbEmpty = false;
 
   setActiveTrackIndex(int newIndex) {
     activeTrackIndex = newIndex;
     notifyListeners();
   }
 
-  getAllMusicFiles() async {
-    bool isPermissionGranted = await audioQuery.checkAndRequest();
-    if (isPermissionGranted) {
-      listAudioFiles = await audioQuery.querySongs();
+  getAllMusicFilesFromOfflineDB() async {
+    listAudioFiles = await OfflineDB.getMusicInfoFromOfflineDB();
+    if (listAudioFiles.isEmpty) {
+      isOfflineDbEmpty = true;
     }
+    notifyListeners();
+  }
 
-    // Save AlbumArt for all of Music Files
-    await FileManager().saveAlbumArtsToCacheDirectory(listAudioFiles);
-
+  getAllMusicFilesFromDevice() async {
+    listAudioFiles = await OfflineDB.getMusicFromDeviceAndSaveToOfflineDB();
+    String fullPathToStoreAlbumArts = await GlobalConst.getAlbumArtDirectory();
     List<AudioSource> listOfAudioSources = [];
-    var directory = await getApplicationCacheDirectory();
-    String fullPathToStoreAlbumArts = "${directory.path}/AlbumArt";
 
     for (var audioInfo in listAudioFiles) {
       Uint8List? artWork = await audioQuery.queryArtwork(audioInfo.id, ArtworkType.AUDIO);

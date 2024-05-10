@@ -1,33 +1,30 @@
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
-
-import 'package:flutter/material.dart';
 import 'package:music_player/global_const.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class FileManager with ChangeNotifier {
-  List<SongModel> listFiles = [];
-  final OnAudioQuery audioQuery = OnAudioQuery();
-
-  getAllMusicFiles() async {
+class FileManager {
+  /// to get all of music files from the device
+  static Future<List<SongModel>> getAllMusicFiles() async {
+    final OnAudioQuery audioQuery = OnAudioQuery();
     bool isPermissionGranted = await audioQuery.checkAndRequest();
     if (isPermissionGranted) {
-      listFiles = await audioQuery.querySongs();
+      List<SongModel> listFiles = await audioQuery.querySongs();
+
+      await saveAlbumArtsToCacheDirectory(listFiles);
+      return listFiles;
     }
 
-    // Save AlbumArt for all of Music Files
-    await saveAlbumArtsToCacheDirectory(listFiles);
-
-    notifyListeners();
+    return [];
   }
 
-  Future<List<String>> saveAlbumArtsToCacheDirectory(List<SongModel> listOfAudioFiles) async {
+  static Future<List<String>> saveAlbumArtsToCacheDirectory(List<SongModel> listOfAudioFiles) async {
+    final OnAudioQuery audioQuery = OnAudioQuery();
     List<String> listOfSavedAlbumArtPath = [];
     var directory = await getApplicationCacheDirectory();
-    String fullPathToStoreAlbumArts = "${directory.path}/AlbumArt";
+    String fullPathToStoreAlbumArts = await GlobalConst.getAlbumArtDirectory();
 
     for (var audioFile in listOfAudioFiles) {
       Uint8List? data = await audioQuery.queryArtwork(audioFile.id, ArtworkType.AUDIO);

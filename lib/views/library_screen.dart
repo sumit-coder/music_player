@@ -21,7 +21,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
   @override
   void initState() {
     var playerProvider = Provider.of<PlayerProvider>(context, listen: false);
-    playerProvider.getAllMusicFiles();
+    playerProvider.getAllMusicFilesFromOfflineDB();
     super.initState();
   }
 
@@ -46,7 +46,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                         style: TextStyle(color: Colors.grey),
                       ),
                       onTap: () async {
-                        playerProvider.getAllMusicFiles();
+                        playerProvider.getAllMusicFilesFromDevice();
                       },
                     ),
                   ),
