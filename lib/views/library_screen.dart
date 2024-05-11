@@ -29,6 +29,17 @@ class _LibraryScreenState extends State<LibraryScreen> {
   Widget build(BuildContext context) {
     var playerProvider = Provider.of<PlayerProvider>(context);
     return Scaffold(
+      // appBar: AppBar(
+      //   backgroundColor: Colors.grey.shade700,
+      //   actions: [
+      //     IconButton(
+      //       onPressed: () {
+      //         playerProvider.getAllMusicFilesFromDevice();
+      //       },
+      //       icon: const Icon(Icons.download, color: Colors.white),
+      //     ),
+      //   ],
+      // ),
       body: SafeArea(
         child: playerProvider.listAudioFiles.isEmpty
             ? Center(
@@ -56,6 +67,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 children: [
                   ListView.builder(
                     itemCount: playerProvider.listAudioFiles.length,
+                    padding: const EdgeInsets.only(top: 12, bottom: 12),
+                    physics: const BouncingScrollPhysics(),
                     itemBuilder: (context, index) {
                       return ListTile(
                         onTap: () {
@@ -65,13 +78,17 @@ class _LibraryScreenState extends State<LibraryScreen> {
                           isFullPlayerMode = true;
                           setState(() {});
                         },
-                        leading: Image.file(
-                          File.fromUri(
-                            Uri.file(playerProvider.listAudioFiles[index].albumArtUrl),
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: Image.file(
+                            File.fromUri(Uri.file(playerProvider.listAudioFiles[index].albumArtUrl)),
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(Icons.audio_file, size: 56);
+                            },
+                            width: 60,
+                            height: 60,
+                            fit: BoxFit.cover,
                           ),
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Icon(Icons.audio_file, size: 56);
-                          },
                         ),
                         title: Text(
                           playerProvider.listAudioFiles[index].title.toString(),
