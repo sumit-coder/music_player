@@ -125,7 +125,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       bottom: 0,
                       left: 0,
                       right: 0,
-                      top: isFullPlayerMode ? 0 : MediaQuery.of(context).size.height - 120,
+                      top: isFullPlayerMode ? 0 : MediaQuery.of(context).size.height - 128,
                       onEnd: () {},
                       child: isFullPlayerMode
                           ? PlayerScreen(
@@ -143,7 +143,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                               },
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                                height: 68,
+                                // height: 72,
                                 color: const Color.fromARGB(255, 47, 47, 47),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -152,10 +152,23 @@ class _LibraryScreenState extends State<LibraryScreen> {
                                       children: [
                                         Hero(
                                           tag: 'Album',
-                                          child: QueryArtworkWidget(
-                                            controller: playerProvider.audioQuery,
-                                            id: playerProvider.listAudioFiles[playerProvider.activeTrackIndex].id,
-                                            type: ArtworkType.AUDIO,
+                                          // child: QueryArtworkWidget(
+                                          //   controller: playerProvider.audioQuery,
+                                          //   id: playerProvider.listAudioFiles[playerProvider.activeTrackIndex].id,
+                                          //   type: ArtworkType.AUDIO,
+                                          // ),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: Image.file(
+                                              File.fromUri(
+                                                  Uri.file(playerProvider.listAudioFiles[playerProvider.activeTrackIndex].albumArtUrl)),
+                                              errorBuilder: (context, error, stackTrace) {
+                                                return const Icon(Icons.audio_file, size: 56);
+                                              },
+                                              width: 56,
+                                              height: 56,
+                                              fit: BoxFit.cover,
+                                            ),
                                           ),
                                         ),
                                         const SizedBox(width: 8),
@@ -168,8 +181,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
                                               Text(
                                                 playerProvider.listAudioFiles[playerProvider.activeTrackIndex].title,
                                                 maxLines: 1,
+                                                style: const TextStyle(color: Colors.grey, fontSize: 16, overflow: TextOverflow.ellipsis),
                                               ),
-                                              Text(playerProvider.listAudioFiles[playerProvider.activeTrackIndex].artist!),
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                playerProvider.listAudioFiles[playerProvider.activeTrackIndex].artist,
+                                                style: TextStyle(color: Colors.grey.shade700),
+                                              ),
                                             ],
                                           ),
                                         ),
