@@ -9,7 +9,6 @@ import 'package:music_player/views/widgets/music_duration_widget.dart';
 import 'package:music_player/views/widgets/player_widgets/play_button.dart';
 import 'package:music_player/views/widgets/player_widgets/repeat_button.dart';
 import 'package:music_player/views/widgets/player_widgets/shuffle_button.dart';
-import 'package:on_audio_query/on_audio_query.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PlayerScreen extends StatefulWidget {
@@ -24,6 +23,13 @@ class PlayerScreen extends StatefulWidget {
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
+  @override
+  void initState() {
+    var playerProvider = Provider.of<PlayerProvider>(context, listen: false);
+    playerProvider.player.play();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var playerProvider = Provider.of<PlayerProvider>(context);
