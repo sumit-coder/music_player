@@ -19,6 +19,16 @@ class PlayerProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  setLoopMode(LoopMode loopMode) {
+    player.setLoopMode(loopMode);
+    notifyListeners();
+  }
+
+  setShuffleMode(bool isShuffleModeOn) {
+    player.setShuffleModeEnabled(isShuffleModeOn);
+    notifyListeners();
+  }
+
   getAllMusicFilesFromOfflineDB() async {
     listAudioFiles = await OfflineDB.getMusicInfoFromOfflineDB();
     if (listAudioFiles.isEmpty) {
