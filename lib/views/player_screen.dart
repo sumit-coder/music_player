@@ -25,8 +25,8 @@ class PlayerScreen extends StatefulWidget {
 class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void initState() {
-    var playerProvider = Provider.of<PlayerProvider>(context, listen: false);
-    playerProvider.player.play();
+    // var playerProvider = Provider.of<PlayerProvider>(context, listen: false);
+    // playerProvider.player.play();
     super.initState();
   }
 
@@ -169,7 +169,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                   ],
                                 );
                               }
-                              return Container();
+                              return Container(
+                                child: Text("data"),
+                              );
                             },
                           );
                         }
